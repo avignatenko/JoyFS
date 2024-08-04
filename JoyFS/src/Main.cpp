@@ -70,6 +70,8 @@ int checkedMain(int argc, char** argv)
 
     ptree settings = readSettings(settingsPath);
 
+    LogSettings logSettings = readLogSettings(settings);
+    
     initLogging(logSettings);
 
     return 0;

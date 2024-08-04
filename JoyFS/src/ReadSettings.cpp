@@ -3,6 +3,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+#include <map>
+
 using boost::property_tree::ptree;
 using std::filesystem::file_time_type;
 using std::filesystem::path;

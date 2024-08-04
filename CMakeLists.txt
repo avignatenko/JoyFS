@@ -63,9 +63,5 @@ if (MSVC)
 endif()
 
 # Include sub-projects.
-add_subdirectory("AltBFF")
-add_subdirectory("BFFCLAPI")
-add_subdirectory("Utils")
-add_subdirectory("promise-cpp")
+add_subdirectory("JoyFS")
 add_subdirectory("FSUIPC")
-add_subdirectory("CSV")
