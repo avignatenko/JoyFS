@@ -3,10 +3,9 @@
 
 cmake_minimum_required (VERSION 3.15)
 
-project ("AlfBFF" LANGUAGES CXX)
+project ("JoyFS" LANGUAGES CXX)
 
 # global configuration
-enable_testing()
 
 # conan
 if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
@@ -37,7 +36,6 @@ endif()
 conan_cmake_configure(REQUIRES 
                         boost/1.71.0
                         spdlog/1.8.5
-                        catch2/2.12.1
                         sdl/2.30.5
                       GENERATORS ${conan_generator})
 

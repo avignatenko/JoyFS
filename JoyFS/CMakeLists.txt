@@ -1,9 +1,9 @@
-﻿# CMakeList.txt : CMake project for AlfBFF, include source and define
+﻿# CMakeList.txt : CMake project for JoyFS, include source and define
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.15)
 
-project(AltBFF)
+project(JoyFS)
 
 # Add source to this project's executable.
 add_executable (${PROJECT_NAME})
@@ -12,7 +12,6 @@ target_link_libraries(${PROJECT_NAME}
 	PRIVATE 
 		CONAN_PKG::boost 
 		CONAN_PKG::spdlog 
-		CONAN_PKG::catch2
 		CONAN_PKG::sdl)
 
 target_sources(${PROJECT_NAME} PRIVATE 
