@@ -16,7 +16,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	"src/ReadSettings.h")
 
 
-set (settingsfile_source "${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+set (settingsfile_source "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
 
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
