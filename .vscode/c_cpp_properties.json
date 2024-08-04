@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Z-Uno2",
+            "includePath": [
+                "/Users/alexey/Development/zuno/Z-Uno2/hardware/cores/**",
+                "/Users/alexey/Development/zuno/Z-Uno2/hardware/libraries/**",
+                "/Users/alexey/Development/zuno/Z-Uno2/tools/gcc/lib/gcc/arm-none-eabi/7.2.1/include/**",
+                "/Users/alexey/Development/zuno/Z-Uno2/tools/inc/**"
+            ],
+            "forcedInclude": [
+                "/Users/alexey/Development/zuno/Z-Uno2/hardware/cores/includes/Arduino.h"
+            ],
+            "defines": [],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "/Users/alexey/Development/zuno/Z-Uno2/tools/gcc/bin/arm-none-eabi-gcc"
+        }
+    ],
+    "version": 4
+}
