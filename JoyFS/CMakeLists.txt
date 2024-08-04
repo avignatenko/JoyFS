@@ -8,7 +8,12 @@ project(AltBFF)
 # Add source to this project's executable.
 add_executable (${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME}  PRIVATE CONAN_PKG::boost CONAN_PKG::spdlog CONAN_PKG::catch2)
+target_link_libraries(${PROJECT_NAME}  
+	PRIVATE 
+		CONAN_PKG::boost 
+		CONAN_PKG::spdlog 
+		CONAN_PKG::catch2
+		CONAN_PKG::sdl)
 
 target_sources(${PROJECT_NAME} PRIVATE 
 	"src/Main.cpp"

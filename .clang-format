@@ -1,0 +1,15 @@
+---
+BasedOnStyle: Google
+BreakBeforeBraces: Allman
+ColumnLimit: 120
+Language: Cpp
+IndentWidth: 4
+AccessModifierOffset: -4
+IndentCaseLabels: false
+IncludeBlocks: Preserve
+AllowShortFunctionsOnASingleLine: Inline
+
+DerivePointerAlignment: 'false'
+
+...
+

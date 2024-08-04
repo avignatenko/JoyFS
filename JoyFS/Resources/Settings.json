@@ -1,0 +1,24 @@
+{
+    "App": {
+        "LogLevel": "Trace",
+        "PollingDelayMs": "30"
+    },
+    "Joysticks": {
+        "1": {
+            "Buttons": {
+                "0": {
+                    "Operation": "delta",
+                    "Offset": "0xABDC",
+                    "Size": 2,
+                    "Value": 1
+                },
+                "1": {
+                    "Operation": "delta",
+                    "Offset": "0xABDC",
+                    "Size": 2,
+                    "Value": -1
+                }
+            }
+        }
+    }
+}

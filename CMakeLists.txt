@@ -38,6 +38,7 @@ conan_cmake_configure(REQUIRES
                         boost/1.71.0
                         spdlog/1.8.5
                         catch2/2.12.1
+                        sdl/2.30.5
                       GENERATORS ${conan_generator})
 
 foreach(config ${conan_configs_to_create})
