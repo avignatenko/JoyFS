@@ -1,11 +1,14 @@
 ﻿
+#include "ReadSettings.h"
+#include "Sim.h"
+
 #include <fmt/format.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
 
-#include "ReadSettings.h"
+
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -23,14 +26,6 @@
 #include <string>
 
 using namespace std;
-
-BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
-{
-    // todo: add closing
-    spdlog::shutdown();
-
-    return FALSE;  // let others work on this
-}
 
 using boost::property_tree::ptree;
 using std::filesystem::file_time_type;
@@ -73,6 +68,25 @@ void initLogging(const boost::property_tree::ptree& settings)
     spdlog::info("JoyFS logging started");
 }
 
+enum class Operation
+{
+    Delta,
+    Set
+};
+
+struct Button
+{
+    Operation operation;
+    int offset;
+    int size;
+    int value;
+};
+
+struct Joystick
+{
+    std::map<int, Button> buttons;
+};
+
 int main(int argc, char** argv)
 {
     try
@@ -85,7 +99,7 @@ int main(int argc, char** argv)
         ptree joySettings = settings.get_child("Joysticks");
 
         initLogging(appSettings);
-
+    
         SDL_SetMainReady();
 
         if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
@@ -93,20 +107,40 @@ int main(int argc, char** argv)
             throw std::runtime_error(fmt::format("Couldn't initialize SDL: {}", SDL_GetError()));
         }
 
+        spdlog::info("Enumeration of system joysticks:");
         for (int i = 0; i < SDL_NumJoysticks(); i++)
         {
-            spdlog::info(" {} = {} ", i, SDL_JoystickNameForIndex(i));
+            spdlog::info("  {} = {} ", i, SDL_JoystickNameForIndex(i));
         }
 
         SDL_JoystickEventState(SDL_ENABLE);
 
-        std::vector<SDL_Joystick*> joysticks;
+        std::map<SDL_JoystickID, Joystick> joysticks;
         for (const auto& joy : joySettings)
         {
             int id = boost::lexical_cast<int>(joy.first);
             spdlog::info("Capturing device {}", id);
             SDL_Joystick* joystick = SDL_JoystickOpen(id);
-            joysticks.push_back(joystick);
+            Joystick joystickSettings;
+            for(const auto& button: joy.second.get_child("Buttons"))
+            {
+                int id = boost::lexical_cast<int>(button.first);
+                spdlog::info("Adding button {}", id);
+
+                Button b;
+                b.operation = Operation::Delta; // fixme
+
+                auto hexStr = button.second.get<std::string>("Offset");
+                b.offset = std::stoul(hexStr, nullptr, 16);
+
+                b.size = button.second.get<int>("Size");
+                b.value = button.second.get<int>("Value");
+
+                spdlog::info("Button {} settings: {}, {}, {}, {}", id, b.operation, b.offset, b.size, b.value);
+                
+                joystickSettings.buttons[id] = b;
+            }
+            joysticks[SDL_JoystickInstanceID(joystick)] = joystickSettings;
         }
 
         spdlog::info("Starting event processing cycle");
@@ -116,6 +150,7 @@ int main(int argc, char** argv)
         spdlog::info("Polling delay {}", pollingDelayMs);
         SDL_Event event;
 
+        Sim sim;
         for (; !end;)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(pollingDelayMs));
@@ -133,13 +168,22 @@ int main(int argc, char** argv)
                 case SDL_JOYBUTTONDOWN:
                 case SDL_JOYBUTTONUP:
                 {
+                    // get id
+                    auto joy = joysticks.find(event.jbutton.which);
+                    if (joy == joysticks.end()) break;
+                  
+                    auto button = joy->second.buttons.find(event.jbutton.button);
+                    if (button == joy->second.buttons.end()) break;
+
+
+                    
                     // data->mutable_button()->set_index(event.jbutton.button);
                     // data->mutable_button()->set_value(event.jbutton.state == SDL_PRESSED ? true : false);
                     break;
                 }
                 case SDL_QUIT:
                 {
-                    spdlog::info("ASDFADS");
+                    spdlog::info("Quitting...");
                     end = true;
                     break;
                 }

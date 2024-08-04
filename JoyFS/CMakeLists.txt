@@ -10,11 +10,14 @@ add_executable (${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}  
 	PRIVATE 
+		FSUIPC
 		CONAN_PKG::boost 
 		CONAN_PKG::spdlog 
 		CONAN_PKG::sdl)
 
 target_sources(${PROJECT_NAME} PRIVATE 
+	"src/Sim.cpp"
+	"src/Sim.h"
 	"src/Main.cpp"
 	"src/ReadSettings.cpp"
 	"src/ReadSettings.h")
