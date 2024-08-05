@@ -20,7 +20,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 	"src/Sim.h"
 	"src/Main.cpp"
 	"src/ReadSettings.cpp"
-	"src/ReadSettings.h")
+	"src/ReadSettings.h"
+	"src/Logging.h"
+	"src/Logging.cpp")
 
 
 set (settingsfile_source "${CMAKE_CURRENT_SOURCE_DIR}/Resources/")
