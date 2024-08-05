@@ -22,7 +22,7 @@ bool Sim::connect()
     if (fsuipcPresent)
         spdlog::info("FSUIPC found");
     else
-        spdlog::error("FSUIPC not found (error {}), continue in test mode", dwResult);
+        spdlog::error("FSUIPC not found (error {})", dwResult);
 
     connected_ = fsuipcPresent;
 
@@ -33,4 +33,9 @@ void Sim::disconnect()
 {
     FSUIPC_Close();
     connected_ = false;
+}
+
+void Sim::process() 
+{
+    
 }

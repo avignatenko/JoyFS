@@ -8,8 +8,6 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
 
-
-
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -50,14 +48,17 @@ void initLogging(const boost::property_tree::ptree& settings)
 {
     // init logging
 
-    auto logLevelStr = boost::algorithm::to_lower_copy(settings.get<std::string>("LogLevel"));
-    auto logLevel = toLogLevel(logLevelStr);
+    auto logLevelConsoleStr = boost::algorithm::to_lower_copy(settings.get<std::string>("LogLevelConsole"));
+    auto logLevelConsole = toLogLevel(logLevelConsoleStr);
+
+    auto logLevelFileStr = boost::algorithm::to_lower_copy(settings.get<std::string>("LogLevelFile"));
+    auto logLevelFile = toLogLevel(logLevelFileStr);
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::info);
+    console_sink->set_level(logLevelConsole);
 
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("joyfs.log", true);
-    file_sink->set_level(logLevel);
+    file_sink->set_level(logLevelFile);
 
     auto logger = std::make_shared<spdlog::logger>("multi_sink", spdlog::sinks_init_list{console_sink, file_sink});
 
@@ -99,7 +100,7 @@ int main(int argc, char** argv)
         ptree joySettings = settings.get_child("Joysticks");
 
         initLogging(appSettings);
-    
+
         SDL_SetMainReady();
 
         if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
@@ -122,13 +123,13 @@ int main(int argc, char** argv)
             spdlog::info("Capturing device {}", id);
             SDL_Joystick* joystick = SDL_JoystickOpen(id);
             Joystick joystickSettings;
-            for(const auto& button: joy.second.get_child("Buttons"))
+            for (const auto& button : joy.second.get_child("Buttons"))
             {
                 int id = boost::lexical_cast<int>(button.first);
                 spdlog::info("Adding button {}", id);
 
                 Button b;
-                b.operation = Operation::Delta; // fixme
+                b.operation = Operation::Delta;  // fixme
 
                 auto hexStr = button.second.get<std::string>("Offset");
                 b.offset = std::stoul(hexStr, nullptr, 16);
@@ -137,7 +138,7 @@ int main(int argc, char** argv)
                 b.value = button.second.get<int>("Value");
 
                 spdlog::info("Button {} settings: {}, {}, {}, {}", id, b.operation, b.offset, b.size, b.value);
-                
+
                 joystickSettings.buttons[id] = b;
             }
             joysticks[SDL_JoystickInstanceID(joystick)] = joystickSettings;
@@ -151,9 +152,12 @@ int main(int argc, char** argv)
         SDL_Event event;
 
         Sim sim;
+
         for (; !end;)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(pollingDelayMs));
+
+            sim.process();
 
             while (SDL_PollEvent(&event))
             {
@@ -168,17 +172,17 @@ int main(int argc, char** argv)
                 case SDL_JOYBUTTONDOWN:
                 case SDL_JOYBUTTONUP:
                 {
+                    spdlog::trace("Button event: joy {}, id {}, pressed {}", event.jbutton.which, event.jbutton.button,
+                                  event.jbutton.state);
                     // get id
                     auto joy = joysticks.find(event.jbutton.which);
                     if (joy == joysticks.end()) break;
-                  
+
                     auto button = joy->second.buttons.find(event.jbutton.button);
                     if (button == joy->second.buttons.end()) break;
 
+                    spdlog::trace("Found button mapping: joy {}, button {}", joy->first, button->first);
 
-                    
-                    // data->mutable_button()->set_index(event.jbutton.button);
-                    // data->mutable_button()->set_value(event.jbutton.state == SDL_PRESSED ? true : false);
                     break;
                 }
                 case SDL_QUIT:

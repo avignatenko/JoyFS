@@ -10,6 +10,9 @@ public:
     void disconnect();
     [[nodiscard]] bool connected() const { return connected_; }
 
+    // update data
+    void process(); 
+    
 private:
     bool connected_;
 };
